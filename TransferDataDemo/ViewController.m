@@ -30,6 +30,12 @@
     self.title = @"第一个页面";
     self.view.backgroundColor = [UIColor clearColor];
     
+    NextVC *next = [[NextVC alloc]init];
+    
+    next.NextVCBlock = ^(NSString *text){
+        _useBlockText.text = [NSString stringWithFormat:@"I'm from foo block : %@", text];
+    };
+    
     [self initSubview];
 }
 
@@ -114,14 +120,22 @@
     [self.navigationController pushViewController:next animated:YES];
 }
 
-
+/**
+ *  @author Chan
+ *
+ *  @brief  按钮事件：进入下个页面，指定Block回调函数
+ */
 - (void)toNext_Block {
     
     NextVC *next = [[NextVC alloc]init];
     
-    next.NextVCBlock = ^(NSString *text){
+    __weak typeof (NextVC) *weakNext = next;
+    
+    weakNext.NextVCBlock = ^(NSString *text){
         _useBlockText.text = [NSString stringWithFormat:@"I'm from block : %@", text];
+        NSLog(@"I'm weakNext == %@",weakNext.description);
     };
+    
     [self.navigationController pushViewController:next animated:YES];
 }
 #pragma mark - NextVCDelegate
