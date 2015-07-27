@@ -13,10 +13,12 @@
     
     UILabel *_useDelegateText;
     UILabel *_useBlockText;
+    UILabel *_useNoticeText;
     
     
     UIButton *_toNextVC_Delegate;
     UIButton *_toNextVC_Block;
+    UIButton *_toNextVC_Notice;
 }
 @end
 
@@ -50,6 +52,13 @@
     [_useBlockText setTextColor:[UIColor whiteColor]];
     [self.view addSubview:_useBlockText];
     
+    _useNoticeText = [[UILabel alloc]initWithFrame:CGRectMake(center.x - 125, center.y, 250, 30)];
+    _useNoticeText.font = [UIFont systemFontOfSize:14.0];
+    _useNoticeText.textAlignment = NSTextAlignmentCenter;
+    _useNoticeText.backgroundColor = [UIColor lightGrayColor];
+    [_useNoticeText setTextColor:[UIColor whiteColor]];
+    [self.view addSubview:_useNoticeText];
+    
     
     _toNextVC_Delegate = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     _toNextVC_Delegate.frame = CGRectMake(center.x - 75, center.y + 50, 150, 30);
@@ -70,6 +79,32 @@
     [self.view addSubview:_toNextVC_Block];
     
     [_toNextVC_Block addTarget:self action:@selector(toNext_Block) forControlEvents:UIControlEventTouchUpInside];
+    
+    _toNextVC_Notice = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    _toNextVC_Notice.frame = CGRectMake(center.x - 75, center.y + 150, 150, 30);
+    [_toNextVC_Notice setTitle:@"Notice" forState:UIControlStateNormal];
+    [_toNextVC_Notice setTitleColor:[UIColor lightGrayColor] forState:UIControlStateHighlighted];
+    [_toNextVC_Notice setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [_toNextVC_Notice setBackgroundColor:[UIColor greenColor]];
+    [self.view addSubview:_toNextVC_Notice];
+    
+    [_toNextVC_Notice addTarget:self action:@selector(toNext_Notice) forControlEvents:UIControlEventTouchUpInside];
+    [self addNotice];
+}
+
+- (void)addNotice {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"tranferText" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotice:) name:@"tranferText" object:nil];
+}
+
+- (void)toNext_Notice {
+    NextVC *next = [[NextVC alloc]init];
+    [self.navigationController pushViewController:next animated:YES];
+}
+
+- (void)receiveNotice:(NSNotification *)notice {
+    NSString *text = (NSString *)notice.object;
+    _useNoticeText.text = [NSString stringWithFormat:@"I'm from notice : %@", text];
 }
 
 - (void)toNext_Delegate {

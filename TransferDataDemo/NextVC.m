@@ -12,6 +12,7 @@
 {
     UIButton *_useDelegate;
     UIButton *_useBlock;
+    UIButton *_useNotice;
     
     UITextField *_text;
 }
@@ -57,8 +58,24 @@
     [self.view addSubview:_useBlock];
     
     [_useBlock addTarget:self action:@selector(tranferUseBlock) forControlEvents:UIControlEventTouchUpInside];
+    
+    _useNotice = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    _useNotice.frame = CGRectMake(center.x - 75, 350, 150, 30);
+    [_useNotice setTitle:@"使用notice传值" forState:UIControlStateNormal];
+    [_useNotice setTitleColor:[UIColor lightGrayColor] forState:UIControlStateHighlighted];
+    [_useNotice setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [_useNotice setBackgroundColor:[UIColor greenColor]];
+    [self.view addSubview:_useNotice];
+    
+    [_useNotice addTarget:self action:@selector(tranferUseNotice) forControlEvents:UIControlEventTouchUpInside];
 }
 
+
+/**
+ *  @author Chan
+ *
+ *  @brief  使用Delegate进行页面传值
+ */
 - (void)tranferUseDelegate {
     
     if (self.delegate && [self.delegate respondsToSelector:@selector(tranferText:)]) {
@@ -68,11 +85,22 @@
     [self.navigationController popViewControllerAnimated:YES];
 }
 
+
+/**
+ *  @author Chan
+ *
+ *  @brief  使用Block进行页面传值
+ */
 - (void)tranferUseBlock {
     if (self.NextVCBlock) {
         self.NextVCBlock(_text.text);
     }
     
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)tranferUseNotice {
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"tranferText" object:_text.text];
     [self.navigationController popViewControllerAnimated:YES];
 }
 
