@@ -16,5 +16,6 @@
 
 @property (nonatomic, assign)id<NextVCDelegate> delegate;
 @property (nonatomic, copy) void(^NextVCBlock)(NSString *text);
+@property (nonatomic, strong) UITextField *text;
 
 @end

@@ -84,7 +84,7 @@
     [_toNextVC_Block setBackgroundColor:[UIColor greenColor]];
     [self.view addSubview:_toNextVC_Block];
     
-    [_toNextVC_Block addTarget:self action:@selector(toNext_Block) forControlEvents:UIControlEventTouchUpInside];
+    [_toNextVC_Block addTarget:self action:@selector(toNext_KVO) forControlEvents:UIControlEventTouchUpInside];
     
     _toNextVC_Notice = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     _toNextVC_Notice.frame = CGRectMake(center.x - 75, center.y + 150, 150, 30);
@@ -103,6 +103,11 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotice:) name:@"tranferText" object:nil];
 }
 
+/**
+ *  @author Chan
+ *
+ *  @brief  按钮事件，使用notification传值
+ */
 - (void)toNext_Notice {
     NextVC *next = [[NextVC alloc]init];
     [self.navigationController pushViewController:next animated:YES];
@@ -113,6 +118,11 @@
     _useNoticeText.text = [NSString stringWithFormat:@"I'm from notice : %@", text];
 }
 
+/**
+ *  @author Chan
+ *
+ *  @brief  按钮事件，使用delegate传值
+ */
 - (void)toNext_Delegate {
     
     NextVC *next = [[NextVC alloc]init];
@@ -123,7 +133,7 @@
 /**
  *  @author Chan
  *
- *  @brief  按钮事件：进入下个页面，指定Block回调函数
+ *  @brief  按钮事件，使用block传值
  */
 - (void)toNext_Block {
     
@@ -138,6 +148,25 @@
     
     [self.navigationController pushViewController:next animated:YES];
 }
+
+- (void)toNext_KVO {
+    
+    NextVC *next = [[NextVC alloc]init];
+    [next setValue:@"" forKey:@"text.text"];
+    [next addObserver:self forKeyPath:@"text.text" options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:nil];
+ 
+    [self.navigationController pushViewController:next animated:YES];
+}
+
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    NSLog(@"I'm coming.");
+    UITextField *text = (UITextField *)object;
+    if ([keyPath isEqualToString:@"text.text"]) {
+        _useBlockText.text = [NSString stringWithFormat:@"I'm from KVO : %@",text.text];
+    }
+}
+
 #pragma mark - NextVCDelegate
 
 - (void)tranferText:(NSString *)text {

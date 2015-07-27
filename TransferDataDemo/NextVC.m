@@ -13,8 +13,6 @@
     UIButton *_useDelegate;
     UIButton *_useBlock;
     UIButton *_useNotice;
-    
-    UITextField *_text;
 }
 @end
 
@@ -57,7 +55,7 @@
     [_useBlock setBackgroundColor:[UIColor greenColor]];
     [self.view addSubview:_useBlock];
     
-    [_useBlock addTarget:self action:@selector(tranferUseBlock) forControlEvents:UIControlEventTouchUpInside];
+    [_useBlock addTarget:self action:@selector(transferUseKVO) forControlEvents:UIControlEventTouchUpInside];
     
     _useNotice = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     _useNotice.frame = CGRectMake(center.x - 75, 350, 150, 30);
@@ -101,6 +99,12 @@
 
 - (void)tranferUseNotice {
     [[NSNotificationCenter defaultCenter] postNotificationName:@"tranferText" object:_text.text];
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+
+- (void)transferUseKVO {
+    [self setValue:_text.text forKey:@"text.text"];
     [self.navigationController popViewControllerAnimated:YES];
 }
 
