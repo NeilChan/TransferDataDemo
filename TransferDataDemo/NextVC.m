@@ -13,10 +13,19 @@
     UIButton *_useDelegate;
     UIButton *_useBlock;
     UIButton *_useNotice;
+    UIButton *_useKVO;
 }
 @end
 
 @implementation NextVC
+
+- (id)init {
+    self = [super init];
+    if (self) {
+        _text = [[UITextField alloc]init];
+    }
+    return self;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -31,10 +40,10 @@
     CGPoint center = self.view.center;
     
     
-    _text = [[UITextField alloc]initWithFrame:CGRectMake(center.x - 75, 200, 150, 30)];
-    _text.textColor = [UIColor lightGrayColor];
+    _text.frame = CGRectMake(center.x - 75, 200, 150, 30);
+    _text.textColor = [UIColor blackColor];
     _text.font = [UIFont systemFontOfSize:14.0];
-    _text.borderStyle = UITextBorderStyleRoundedRect;
+    _text.borderStyle = UITextBorderStyleLine;
     [self.view addSubview:_text];
     
     _useDelegate = [UIButton buttonWithType:UIButtonTypeRoundedRect];
@@ -66,6 +75,16 @@
     [self.view addSubview:_useNotice];
     
     [_useNotice addTarget:self action:@selector(tranferUseNotice) forControlEvents:UIControlEventTouchUpInside];
+    
+    _useKVO = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    _useKVO.frame = CGRectMake(center.x - 75, 400, 150, 30);
+    [_useKVO setTitle:@"使用KVO传值" forState:UIControlStateNormal];
+    [_useKVO setTitleColor:[UIColor lightGrayColor] forState:UIControlStateHighlighted];
+    [_useKVO setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [_useKVO setBackgroundColor:[UIColor greenColor]];
+    [self.view addSubview:_useKVO];
+    
+    [_useKVO addTarget:self action:@selector(transferUseKVO) forControlEvents:UIControlEventTouchUpInside];
 }
 
 
@@ -104,7 +123,9 @@
 
 
 - (void)transferUseKVO {
-    [self setValue:_text.text forKey:@"text.text"];
+    //[self.text setValue:_text.text forKey:@"text"];
+    NSLog(@"self.text == %@", [self valueForKeyPath:@"text.text"]);
+    [self setValue:_text.text forKeyPath:@"text.text"];
     [self.navigationController popViewControllerAnimated:YES];
 }
 

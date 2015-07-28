@@ -18,4 +18,6 @@
 @property (nonatomic, copy) void(^NextVCBlock)(NSString *text);
 @property (nonatomic, strong) UITextField *text;
 
+
+- (id)init;
 @end

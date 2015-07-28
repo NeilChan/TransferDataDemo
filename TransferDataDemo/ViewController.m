@@ -14,11 +14,13 @@
     UILabel *_useDelegateText;
     UILabel *_useBlockText;
     UILabel *_useNoticeText;
-    
+    UILabel *_useKVOText;
     
     UIButton *_toNextVC_Delegate;
     UIButton *_toNextVC_Block;
     UIButton *_toNextVC_Notice;
+    UIButton *_toNextVC_KVO;
+    
 }
 @end
 
@@ -30,12 +32,6 @@
     self.title = @"第一个页面";
     self.view.backgroundColor = [UIColor clearColor];
     
-    NextVC *next = [[NextVC alloc]init];
-    
-    next.NextVCBlock = ^(NSString *text){
-        _useBlockText.text = [NSString stringWithFormat:@"I'm from foo block : %@", text];
-    };
-    
     [self initSubview];
 }
 
@@ -43,28 +39,34 @@
     
     CGPoint center = [self.view center];
     
-    _useDelegateText = [[UILabel alloc]initWithFrame:CGRectMake(center.x - 125, center.y - 100, 250, 30)];
+    _useDelegateText = [[UILabel alloc]initWithFrame:CGRectMake(center.x - 125, center.y - 150, 250, 30)];
     _useDelegateText.font = [UIFont systemFontOfSize:14.0];
-    _useDelegateText.backgroundColor = [UIColor lightGrayColor];
+    _useDelegateText.backgroundColor = [UIColor colorWithRed:245.0/255 green:245.0/255 blue:245.0/255 alpha:1.0];
     _useDelegateText.textAlignment = NSTextAlignmentCenter;
-    [_useDelegateText setTextColor:[UIColor whiteColor]];
+    [_useDelegateText setTextColor:[UIColor blackColor]];
     [self.view addSubview:_useDelegateText];
 
 
-    _useBlockText = [[UILabel alloc]initWithFrame:CGRectMake(center.x - 125, center.y - 50, 250, 30)];
+    _useBlockText = [[UILabel alloc]initWithFrame:CGRectMake(center.x - 125, center.y - 100, 250, 30)];
     _useBlockText.font = [UIFont systemFontOfSize:14.0];
     _useBlockText.textAlignment = NSTextAlignmentCenter;
-    _useBlockText.backgroundColor = [UIColor lightGrayColor];
-    [_useBlockText setTextColor:[UIColor whiteColor]];
+    _useBlockText.backgroundColor = [UIColor colorWithRed:245.0/255 green:245.0/255 blue:245.0/255 alpha:1.0];
+    [_useBlockText setTextColor:[UIColor blackColor]];
     [self.view addSubview:_useBlockText];
     
-    _useNoticeText = [[UILabel alloc]initWithFrame:CGRectMake(center.x - 125, center.y, 250, 30)];
+    _useNoticeText = [[UILabel alloc]initWithFrame:CGRectMake(center.x - 125, center.y - 50, 250, 30)];
     _useNoticeText.font = [UIFont systemFontOfSize:14.0];
     _useNoticeText.textAlignment = NSTextAlignmentCenter;
-    _useNoticeText.backgroundColor = [UIColor lightGrayColor];
-    [_useNoticeText setTextColor:[UIColor whiteColor]];
+    _useNoticeText.backgroundColor = [UIColor colorWithRed:245.0/255 green:245.0/255 blue:245.0/255 alpha:1.0];
+    [_useNoticeText setTextColor:[UIColor blackColor]];
     [self.view addSubview:_useNoticeText];
     
+    _useKVOText = [[UILabel alloc]initWithFrame:CGRectMake(center.x - 125, center.y, 250, 30)];
+    _useKVOText.font = [UIFont systemFontOfSize:14.0];
+    _useKVOText.textAlignment = NSTextAlignmentCenter;
+    _useKVOText.backgroundColor = [UIColor colorWithRed:245.0/255 green:245.0/255 blue:245.0/255 alpha:1.0];
+    [_useKVOText setTextColor:[UIColor blackColor]];
+    [self.view addSubview:_useKVOText];
     
     _toNextVC_Delegate = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     _toNextVC_Delegate.frame = CGRectMake(center.x - 75, center.y + 50, 150, 30);
@@ -84,7 +86,7 @@
     [_toNextVC_Block setBackgroundColor:[UIColor greenColor]];
     [self.view addSubview:_toNextVC_Block];
     
-    [_toNextVC_Block addTarget:self action:@selector(toNext_KVO) forControlEvents:UIControlEventTouchUpInside];
+    [_toNextVC_Block addTarget:self action:@selector(toNext_Block) forControlEvents:UIControlEventTouchUpInside];
     
     _toNextVC_Notice = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     _toNextVC_Notice.frame = CGRectMake(center.x - 75, center.y + 150, 150, 30);
@@ -96,6 +98,17 @@
     
     [_toNextVC_Notice addTarget:self action:@selector(toNext_Notice) forControlEvents:UIControlEventTouchUpInside];
     [self addNotice];
+    
+    _toNextVC_KVO = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    _toNextVC_KVO.frame = CGRectMake(center.x - 75, center.y + 200, 150, 30);
+    [_toNextVC_KVO setTitle:@"KVO" forState:UIControlStateNormal];
+    [_toNextVC_KVO setTitleColor:[UIColor lightGrayColor] forState:UIControlStateHighlighted];
+    [_toNextVC_KVO setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [_toNextVC_KVO setBackgroundColor:[UIColor greenColor]];
+    [self.view addSubview:_toNextVC_KVO];
+    
+    [_toNextVC_KVO addTarget:self action:@selector(toNext_KVO) forControlEvents:UIControlEventTouchUpInside];
+
 }
 
 - (void)addNotice {
@@ -151,20 +164,23 @@
 
 - (void)toNext_KVO {
     
-    NextVC *next = [[NextVC alloc]init];
-    [next setValue:@"" forKey:@"text.text"];
+    NextVC* next = [[NextVC alloc]init];
     [next addObserver:self forKeyPath:@"text.text" options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:nil];
+    
  
     [self.navigationController pushViewController:next animated:YES];
 }
 
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-    NSLog(@"I'm coming.");
-    UITextField *text = (UITextField *)object;
+    NSLog(@"I'm coming.  %@", object);
+    //UITextField *text = (UITextField *)object;
+    NextVC *next = (NextVC *)object;
     if ([keyPath isEqualToString:@"text.text"]) {
-        _useBlockText.text = [NSString stringWithFormat:@"I'm from KVO : %@",text.text];
+        _useBlockText.text = [NSString stringWithFormat:@"I'm from KVO : %@",next.text.text];
     }
+    
+    [next removeObserver:self forKeyPath:@"text.text" context:nil];
 }
 
 #pragma mark - NextVCDelegate
