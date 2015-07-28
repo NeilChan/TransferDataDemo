@@ -97,8 +97,7 @@
     [self.view addSubview:_toNextVC_Notice];
     
     [_toNextVC_Notice addTarget:self action:@selector(toNext_Notice) forControlEvents:UIControlEventTouchUpInside];
-    [self addNotice];
-    
+
     _toNextVC_KVO = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     _toNextVC_KVO.frame = CGRectMake(center.x - 75, center.y + 200, 150, 30);
     [_toNextVC_KVO setTitle:@"KVO" forState:UIControlStateNormal];
@@ -112,8 +111,10 @@
 }
 
 - (void)addNotice {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"tranferText" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotice:) name:@"tranferText" object:nil];
+}
+- (void)removeNotice {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"tranferText" object:nil];
 }
 
 /**
@@ -122,6 +123,7 @@
  *  @brief  按钮事件，使用notification传值
  */
 - (void)toNext_Notice {
+    [self addNotice];
     NextVC *next = [[NextVC alloc]init];
     [self.navigationController pushViewController:next animated:YES];
 }
@@ -129,19 +131,10 @@
 - (void)receiveNotice:(NSNotification *)notice {
     NSString *text = (NSString *)notice.object;
     _useNoticeText.text = [NSString stringWithFormat:@"I'm from notice : %@", text];
+    [self removeNotice];
 }
 
-/**
- *  @author Chan
- *
- *  @brief  按钮事件，使用delegate传值
- */
-- (void)toNext_Delegate {
-    
-    NextVC *next = [[NextVC alloc]init];
-    next.delegate = self;
-    [self.navigationController pushViewController:next animated:YES];
-}
+
 
 /**
  *  @author Chan
@@ -162,6 +155,12 @@
     [self.navigationController pushViewController:next animated:YES];
 }
 
+
+/**
+ *  @author Chan
+ *
+ *  @brief  按钮事件，使用KVO传值
+ */
 - (void)toNext_KVO {
     
     NextVC* next = [[NextVC alloc]init];
@@ -174,18 +173,29 @@
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     NSLog(@"I'm coming.  %@", object);
-    //UITextField *text = (UITextField *)object;
     NextVC *next = (NextVC *)object;
     if ([keyPath isEqualToString:@"text.text"]) {
-        _useBlockText.text = [NSString stringWithFormat:@"I'm from KVO : %@",next.text.text];
+        _useKVOText.text = [NSString stringWithFormat:@"I'm from KVO : %@",next.text.text];
     }
     
     [next removeObserver:self forKeyPath:@"text.text" context:nil];
 }
 
+/**
+ *  @author Chan
+ *
+ *  @brief  按钮事件，使用delegate传值
+ */
+- (void)toNext_Delegate {
+    
+    NextVC *next = [[NextVC alloc]init];
+    next.delegate = self;
+    [self.navigationController pushViewController:next animated:YES];
+}
+
 #pragma mark - NextVCDelegate
 
-- (void)tranferText:(NSString *)text {
+- (void)transferText:(NSString *)text {
     _useDelegateText.text = [NSString stringWithFormat:@"I'm from delegate : %@", text];
 }
 

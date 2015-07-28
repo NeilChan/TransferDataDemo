@@ -54,7 +54,7 @@
     [_useDelegate setBackgroundColor:[UIColor greenColor]];
     [self.view addSubview:_useDelegate];
     
-    [_useDelegate addTarget:self action:@selector(tranferUseDelegate) forControlEvents:UIControlEventTouchUpInside];
+    [_useDelegate addTarget:self action:@selector(transferUseDelegate) forControlEvents:UIControlEventTouchUpInside];
     
     _useBlock = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     _useBlock.frame = CGRectMake(center.x - 75, 300, 150, 30);
@@ -64,7 +64,7 @@
     [_useBlock setBackgroundColor:[UIColor greenColor]];
     [self.view addSubview:_useBlock];
     
-    [_useBlock addTarget:self action:@selector(transferUseKVO) forControlEvents:UIControlEventTouchUpInside];
+    [_useBlock addTarget:self action:@selector(transferUseBlock) forControlEvents:UIControlEventTouchUpInside];
     
     _useNotice = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     _useNotice.frame = CGRectMake(center.x - 75, 350, 150, 30);
@@ -74,7 +74,7 @@
     [_useNotice setBackgroundColor:[UIColor greenColor]];
     [self.view addSubview:_useNotice];
     
-    [_useNotice addTarget:self action:@selector(tranferUseNotice) forControlEvents:UIControlEventTouchUpInside];
+    [_useNotice addTarget:self action:@selector(transferUseNotice) forControlEvents:UIControlEventTouchUpInside];
     
     _useKVO = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     _useKVO.frame = CGRectMake(center.x - 75, 400, 150, 30);
@@ -88,44 +88,50 @@
 }
 
 
-/**
- *  @author Chan
- *
- *  @brief  使用Delegate进行页面传值
- */
-- (void)tranferUseDelegate {
-    
-    if (self.delegate && [self.delegate respondsToSelector:@selector(tranferText:)]) {
-        [self.delegate tranferText:_text.text];
-    }
-    
-    [self.navigationController popViewControllerAnimated:YES];
-}
-
 
 /**
  *  @author Chan
  *
  *  @brief  使用Block进行页面传值
  */
-- (void)tranferUseBlock {
-    if (self.NextVCBlock) {
+- (void)transferUseBlock {
+    if (self.NextVCBlock)
         self.NextVCBlock(_text.text);
-    }
     
     [self.navigationController popViewControllerAnimated:YES];
 }
 
-- (void)tranferUseNotice {
+/**
+ *  @author Chan
+ *
+ *  @brief  使用Notification进行页面传值
+ */
+- (void)transferUseNotice {
     [[NSNotificationCenter defaultCenter] postNotificationName:@"tranferText" object:_text.text];
     [self.navigationController popViewControllerAnimated:YES];
 }
 
-
+/**
+ *  @author Chan
+ *
+ *  @brief  使用KVO进行页面传值
+ */
 - (void)transferUseKVO {
-    //[self.text setValue:_text.text forKey:@"text"];
-    NSLog(@"self.text == %@", [self valueForKeyPath:@"text.text"]);
     [self setValue:_text.text forKeyPath:@"text.text"];
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+/**
+ *  @author Chan
+ *
+ *  @brief  使用Delegate进行页面传值
+ */
+- (void)transferUseDelegate {
+    
+    if (self.delegate && [self.delegate respondsToSelector:@selector(transferText:)]) {
+        [self.delegate transferText:_text.text];
+    }
+    
     [self.navigationController popViewControllerAnimated:YES];
 }
 
@@ -134,14 +140,5 @@
     // Dispose of any resources that can be recreated.
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

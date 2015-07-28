@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @protocol NextVCDelegate <NSObject>
-- (void)tranferText: (NSString *)text;
+- (void)transferText: (NSString *)text;
 @end
 
 @interface NextVC : UIViewController
